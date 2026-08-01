@@ -73,6 +73,40 @@ function formatFullDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+function escapeCsvValue(value: string): string {
+  const needsQuotes = /[",\n]/.test(value);
+  const escaped = value.replace(/"/g, '""');
+  return needsQuotes ? `"${escaped}"` : escaped;
+}
+
+function exportToExcel(respuestas: RespuestaFormulario[]) {
+  const headers = ["Nombre completo", "Email", "Teléfono", "Empresa", "Motivo", "Mensaje", "Fecha de envío"];
+  const rows = respuestas.map((respuesta) => [
+    respuesta.nombreCompleto,
+    respuesta.email,
+    respuesta.telefono || "",
+    respuesta.empresa || "",
+    MOTIVO_META[respuesta.motivo].label,
+    respuesta.mensaje,
+    formatFullDate(respuesta.fechaEnvio),
+  ]);
+
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map((value) => escapeCsvValue(value)).join(","))
+    .join("\r\n");
+
+  // El BOM asegura que Excel reconozca acentos y ñ correctamente al abrir el CSV.
+  const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `resultados-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function MotivoBadge({ motivo }: { motivo: MotivoContacto }) {
   const meta = MOTIVO_META[motivo];
   return (
@@ -254,6 +288,32 @@ export default function PanelResultados() {
             Nombre A-Z
           </option>
         </select>
+
+        <button
+          type="button"
+          onClick={() => exportToExcel(filtradas)}
+          disabled={filtradas.length === 0}
+          className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+          style={{
+            background: "linear-gradient(90deg, var(--form-primary), var(--form-accent))",
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-4 w-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+            />
+          </svg>
+          Exportar a Excel
+        </button>
       </div>
 
       {/* Data view */}
