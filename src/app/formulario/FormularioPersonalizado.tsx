@@ -10,7 +10,6 @@ type FormData = {
   nombreCompleto: string;
   email: string;
   telefono: string;
-  empresa: string;
   motivo: MotivoContacto;
   mensaje: string;
   aceptaTerminos: boolean;
@@ -22,7 +21,6 @@ const INITIAL_DATA: FormData = {
   nombreCompleto: "",
   email: "",
   telefono: "",
-  empresa: "",
   motivo: "",
   mensaje: "",
   aceptaTerminos: false,
@@ -31,7 +29,7 @@ const INITIAL_DATA: FormData = {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const STEP_FIELDS: (keyof FormData)[][] = [
-  ["nombreCompleto", "email", "telefono", "empresa"],
+  ["nombreCompleto", "email", "telefono"],
   ["motivo", "mensaje"],
   ["aceptaTerminos"],
 ];
@@ -293,34 +291,18 @@ export default function FormularioPersonalizado() {
                 {errors.email && <p className="mt-1.5 text-xs text-red-400">{errors.email}</p>}
               </div>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="telefono" className="mb-1.5 block text-sm font-medium text-white/80">
-                    {t.form.labels.telefono} <span className="text-white/40">{t.form.optional}</span>
-                  </label>
-                  <input
-                    id="telefono"
-                    type="text"
-                    value={data.telefono}
-                    onChange={(e) => updateField("telefono", e.target.value)}
-                    className={`${inputBaseClass} ${fieldBorderClass(false)}`}
-                    placeholder={t.form.placeholders.telefono}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="empresa" className="mb-1.5 block text-sm font-medium text-white/80">
-                    {t.form.labels.empresa} <span className="text-white/40">{t.form.optional}</span>
-                  </label>
-                  <input
-                    id="empresa"
-                    type="text"
-                    value={data.empresa}
-                    onChange={(e) => updateField("empresa", e.target.value)}
-                    className={`${inputBaseClass} ${fieldBorderClass(false)}`}
-                    placeholder={t.form.placeholders.empresa}
-                  />
-                </div>
+              <div>
+                <label htmlFor="telefono" className="mb-1.5 block text-sm font-medium text-white/80">
+                  {t.form.labels.telefono} <span className="text-white/40">{t.form.optional}</span>
+                </label>
+                <input
+                  id="telefono"
+                  type="text"
+                  value={data.telefono}
+                  onChange={(e) => updateField("telefono", e.target.value)}
+                  className={`${inputBaseClass} ${fieldBorderClass(false)}`}
+                  placeholder={t.form.placeholders.telefono}
+                />
               </div>
             </>
           )}
@@ -372,7 +354,6 @@ export default function FormularioPersonalizado() {
                 <p className="font-medium text-white/90">{data.nombreCompleto}</p>
                 <p>{data.email}</p>
                 {data.telefono && <p>{data.telefono}</p>}
-                {data.empresa && <p>{data.empresa}</p>}
                 <p className="mt-2 text-white/50">
                   {MOTIVOS.find((m) => m.value === data.motivo)?.label}
                 </p>

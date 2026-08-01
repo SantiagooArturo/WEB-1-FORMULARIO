@@ -5,7 +5,6 @@ type FormularioPayload = {
   nombreCompleto: string;
   email: string;
   telefono: string;
-  empresa: string;
   motivo: "consulta" | "soporte" | "ventas" | "otro";
   mensaje: string;
   aceptaTerminos: boolean;
@@ -65,7 +64,6 @@ export async function POST(request: Request) {
               "Nombre completo": payload.nombreCompleto,
               Email: payload.email,
               Teléfono: payload.telefono || undefined,
-              Empresa: payload.empresa || undefined,
               "Motivo de contacto": MOTIVO_LABELS[payload.motivo as FormularioPayload["motivo"]],
               Mensaje: payload.mensaje,
               "Acepta términos": payload.aceptaTerminos,
